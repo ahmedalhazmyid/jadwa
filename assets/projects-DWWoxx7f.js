@@ -1,2 +1,59 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/client-C85fcJ4s.js","assets/react-SIfiwpqq.js"])))=>i.map(i=>d[i]);
-import{t as e}from"./preload-helper-B4ULwwMs.js";import{d as t,l as n}from"./index-DVOtaFPK.js";var r=(e,t)=>{let n={type:`request`,...t||e},i=e=>r({},Object.assign(n,{validator:e,inputValidator:e}));return{options:n,middleware:e=>r({},Object.assign(n,{middleware:e})),validator:i,inputValidator:i,client:e=>r({},Object.assign(n,{client:e})),server:e=>r({},Object.assign(n,{server:e}))}},i=r({type:`function`}).client(async({next:t})=>{let{getBearerToken:n}=await e(async()=>{let{getBearerToken:e}=await import(`./client-C85fcJ4s.js`).then(e=>e.n);return{getBearerToken:e}},__vite__mapDeps([0,1]));return t({sendContext:{bearerToken:n()??void 0}})}),a=n({method:`GET`}).middleware([i]).handler(t(`aa80086787df2b35957e30c6351eb4101ae4b1b3ba000297d54e69354521aca3`)),o=n({method:`GET`}).middleware([i]).handler(t(`0ab656f523a4a1840e55ff3fc0260d6c05d6398ec40527baec32aad1d39c60b9`)),s=n({method:`GET`}).middleware([i]).handler(t(`7a46f2d87e585938c9d2af069361195068a7b78cd354e58c7440b8edc0cfd103`)),c=n({method:`POST`}).middleware([i]).handler(t(`9a27dc5afbf70799c1297c681cba6a6b942d9646ed0023e5d15453c6f0e29d26`)),l=n({method:`POST`}).middleware([i]).handler(t(`7bee002a2979088d64fde80f7c73aa74f4f89d0447f7384f85cdfe39d1a01339`)),u=n({method:`POST`}).middleware([i]).handler(t(`7de76b877727e6f7dea8fc619983edcae007d0475e8e55bbdaebd15e33f8693e`));n({method:`POST`}).middleware([i]).handler(t(`9a67ed7f600fed69d74bb5f7a75961cf717390c1c11cd1b980d1df4a510db604`));var d=n({method:`POST`}).handler(t(`f3c8ece71878eb3a96def0d570c961084c9a99b0a01df30fd10e8b4cdca54008`));n({method:`GET`}).handler(t(`9e46e13de24c2ee18228eded8460050c79930289b4ca4ee7b15b05a52c390a61`));export{o as a,a as i,u as n,c as o,s as r,d as s,l as t};
+import{r as compute,t as sample}from"./schema-D5neG8AA.js";
+const KEY=`jadwa:projects`;
+function uid(){try{return crypto.randomUUID()}catch{return`p_${Date.now()}`}}
+function load(){try{let e=localStorage.getItem(KEY);return e?JSON.parse(e):[]}catch{return[]}}
+function save(e){localStorage.setItem(KEY,JSON.stringify(e))}
+function summarize(p){return{id:p.id,title:p.title,status:p.status,country:p.country,currency:p.currency,capital:p.capital,npv:p.npv}}
+function buildReport(inputs){
+  const model=compute(inputs);
+  const lang=inputs.language||`ar`;
+  const narrative={
+    executiveSummary:lang===`ar`
+      ?`دراسة محلية: صافي القيمة الحالية ${model.metrics.npv.toFixed(0)} ${inputs.currency}، ومعدل العائد الداخلي ${model.metrics.irr==null?`—`:(model.metrics.irr*100).toFixed(1)+`%`}، والحكم ${model.metrics.verdict} (درجة ${model.metrics.verdictScore}).`
+      :`Local study: NPV ${model.metrics.npv.toFixed(0)} ${inputs.currency}, IRR ${model.metrics.irr==null?`—`:(model.metrics.irr*100).toFixed(1)+`%`}, verdict ${model.metrics.verdict} (score ${model.metrics.verdictScore}).`,
+    marketAnalysis:lang===`ar`
+      ?`تحليل سوق مبسّط محليًا بدون مصادر سحابية. راجع الافتراضات والأرقام قبل أي قرار استثماري.`
+      :`Simplified local market note without cloud research. Review assumptions before any investment decision.`,
+    usedAi:!1
+  };
+  return{inputs,...model,narrative,research:null,citations:[]};
+}
+async function listProjects(){return load().map(summarize)}
+async function quota(){return{remaining:99,limit:99}}
+async function getProject({data:id}){const p=load().find(x=>x.id===id);if(!p)throw new Error(`not found`);return p}
+async function deleteProject({data:id}){save(load().filter(x=>x.id!==id));return{ok:!0}}
+async function saveDraft({data:{data:inputs}}){
+  const id=uid();
+  const project={id,title:inputs.title,description:inputs.description,country:inputs.country,currency:inputs.currency,capital:inputs.capital,status:`draft`,npv:null,inputs,reports:[],createdAt:new Date().toISOString()};
+  save([project,...load()]);
+  return{id};
+}
+async function generate(arg){
+  const payload=arg&&arg.data!==void 0?arg.data:arg||{};
+  const inputs=payload.data??payload;
+  const projectId=payload.projectId;
+  const report=buildReport(inputs);
+  const id=projectId||uid();
+  const existing=load();
+  const prev=existing.find(x=>x.id===id);
+  const project={
+    id,
+    title:inputs.title,
+    description:inputs.description,
+    country:inputs.country,
+    currency:inputs.currency,
+    capital:inputs.capital,
+    status:`ready`,
+    npv:report.metrics.npv,
+    inputs,
+    reports:[{content:report,createdAt:new Date().toISOString()}],
+    createdAt:prev?.createdAt||new Date().toISOString()
+  };
+  save([project,...existing.filter(x=>x.id!==id)]);
+  return{ok:!0,projectId:id};
+}
+async function noop(){return{ok:!0}}
+// keep sample referenced so bundlers/trees don't matter; unused locally is fine
+void sample;
+const o=listProjects,a=quota,u=generate,c=saveDraft,s=getProject,d=noop,l=deleteProject;
+export{o as a,a as i,u as n,c as o,s as r,d as s,l as t};
