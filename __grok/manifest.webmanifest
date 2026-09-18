@@ -1,15 +1,15 @@
 {
   "name": "Jadwa · جدوى",
   "short_name": "Jadwa",
-  "id": "/jadwa-app/",
-  "start_url": "/jadwa-app/",
-  "scope": "/jadwa-app/",
+  "id": "/jadwa/",
+  "start_url": "/jadwa/",
+  "scope": "/jadwa/",
   "display": "standalone",
   "background_color": "#f4f1ea",
   "theme_color": "#1b5c4a",
   "icons": [
     {
-      "src": "/jadwa-app/__grok/icon-180.png",
+      "src": "/jadwa/__grok/icon-180.png",
       "sizes": "180x180",
       "type": "image/png"
     }
