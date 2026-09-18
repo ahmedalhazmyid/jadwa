@@ -9,13 +9,37 @@ async function buildReport(inputs){
   const model=compute(inputs);
   const lang=inputs.language||`ar`;
   const irr=model.metrics.irr;
+  const irrTxt=irr==null?`—`:(irr*100).toFixed(1)+`%`;
+  const npv=model.metrics.npv.toFixed(0);
+  const ar=lang===`ar`;
   const narrative={
-    executiveSummary:lang===`ar`
-      ?`دراسة محلية: صافي القيمة الحالية ${model.metrics.npv.toFixed(0)} ${inputs.currency}، ومعدل العائد الداخلي ${irr==null?`—`:(irr*100).toFixed(1)+`%`}، والحكم ${model.metrics.verdict} (درجة ${model.metrics.verdictScore}).`
-      :`Local study: NPV ${model.metrics.npv.toFixed(0)} ${inputs.currency}, IRR ${irr==null?`—`:(irr*100).toFixed(1)+`%`}, verdict ${model.metrics.verdict} (score ${model.metrics.verdictScore}).`,
-    marketAnalysis:lang===`ar`
+    executiveSummary:ar
+      ?`دراسة محلية لمشروع «${inputs.title}»: صافي القيمة الحالية ${npv} ${inputs.currency}، ومعدل العائد الداخلي ${irrTxt}، والحكم ${model.metrics.verdict} (درجة ${model.metrics.verdictScore}). الأرقام محسوبة محليًا في المتصفح.`
+      :`Local study for “${inputs.title}”: NPV ${npv} ${inputs.currency}, IRR ${irrTxt}, verdict ${model.metrics.verdict} (score ${model.metrics.verdictScore}). Figures are computed locally in the browser.`,
+    marketAnalysis:ar
       ?`تحليل سوق مبسّط محليًا بدون مصادر سحابية. راجع الافتراضات والأرقام قبل أي قرار استثماري.`
       :`Simplified local market note without cloud research. Review assumptions before any investment decision.`,
+    technical:ar
+      ?`الافتراضات التقنية والمالية مأخوذة من المدخلات التي أدخلتها (رأس المال، الإيراد، التكاليف، الضرائب، وسنوات الإسقاط).`
+      :`Technical and financial assumptions come from the inputs you entered (capital, revenue, costs, tax, projection years).`,
+    operations:ar
+      ?`التشغيل مُنمذج عبر نمو الإيراد والتكاليف وعدد الموظفين والرواتب كما في النموذج.`
+      :`Operations are modeled via revenue/cost growth, headcount and salaries as entered.`,
+    risks:ar
+      ?`المخاطر تشمل تغيّر الطلب، ارتفاع التكاليف، وتأخّر التشغيل. الحساسية في التقرير تساعد على اختبار السيناريوهات.`
+      :`Risks include demand shifts, cost inflation, and delayed ramp-up. Sensitivity in the report helps stress-test scenarios.`,
+    recommendations:ar
+      ?`راجع صافي القيمة الحالية ومعدل العائد وفترة الاسترداد قبل الالتزام. هذه نسخة محلية مبسّطة وليست استشارة استثمارية.`
+      :`Review NPV, IRR and payback before committing. This is a simplified local build, not investment advice.`,
+    conclusion:ar
+      ?`الخلاصة وفق المحرك المحلي: الحكم ${model.metrics.verdict}. استخدم الأرقام كنقطة انطلاق ثم دقّق بالبيانات الميدانية.`
+      :`Local-engine conclusion: verdict ${model.metrics.verdict}. Treat figures as a starting point and validate with field data.`,
+    swot:{
+      strengths:ar?`نموذج مالي حتمي واضح؛ مدخلات قابلة للتعديل؛ مؤشرات NPV/IRR/الاسترداد فورية.`:`Deterministic model; editable inputs; immediate NPV/IRR/payback indicators.`,
+      weaknesses:ar?`بدون بحث سوق سحابي حيّ؛ الافتراضات تعتمد على تقديرك.`:`No live cloud market research; assumptions depend on your estimates.`,
+      opportunities:ar?`تحسين التسعير أو خفض التكاليف التشغيلية يرفع العائد بسرعة في الحساسية.`:`Pricing or opex improvements move returns quickly in sensitivity.`,
+      threats:ar?`ضغط المنافسة وتغيّر التكاليف قد يقلّل الهوامش عن السيناريو الأساسي.`:`Competition and cost inflation can compress margins vs the base case.`
+    },
     usedAi:!1
   };
   return{inputs,...model,narrative,research:null,citations:[]};
