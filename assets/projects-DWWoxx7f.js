@@ -44,9 +44,25 @@ async function buildReport(inputs){
   };
   return{inputs,...model,narrative,research:null,citations:[]};
 }
+function needsRepair(p){
+  const n=p?.reports?.[0]?.content?.narrative;
+  return !!(p?.inputs&&(!n||!n.swot||!n.swot.strengths||!n.executiveSummary||!n.conclusion));
+}
 async function listProjects(){return load().map(summarize)}
 async function quota(){return{remaining:99,limit:99}}
-async function getProject(arg){const id=arg&&arg.data!==void 0?arg.data:arg;const p=load().find(x=>x.id===id);if(!p)throw new Error(`not found`);return p}
+async function getProject(arg){
+  const id=arg&&arg.data!==void 0?arg.data:arg;
+  let p=load().find(x=>x.id===id);
+  if(!p)return null;
+  if(needsRepair(p)){
+    try{
+      const report=await buildReport(p.inputs);
+      p={...p,status:`ready`,npv:report.metrics.npv,reports:[{content:report,createdAt:new Date().toISOString()}]};
+      save([p,...load().filter(x=>x.id!==id)]);
+    }catch(err){console.warn(`jadwa repair failed`,err)}
+  }
+  return p;
+}
 async function deleteProject(arg){const id=arg&&arg.data!==void 0?arg.data:arg;save(load().filter(x=>x.id!==id));return{ok:!0}}
 async function saveDraft(arg){
   const payload=arg&&arg.data!==void 0?arg.data:arg||{};
