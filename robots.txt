@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ahmedalhazmyid.github.io/jadwa/sitemap.xml
+Sitemap: https://ahmedalhazmyid.github.io/jadwa-app/sitemap.xml

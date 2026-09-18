@@ -6,19 +6,19 @@ This repository is a **static GitHub Pages port** of the Jadwa TanStack/React SP
 
 ## Live site
 
-**https://ahmedalhazmyid.github.io/jadwa/**
+**https://ahmedalhazmyid.github.io/jadwa-app/**
 
 ## What’s included
 
 - Static HTML for all public routes (`/`, `/start`, `/blog/*`, `/valuation`, …)
 - Full Vite asset graph (including underscore chunks `_slug-*.js`, `_id-*.js`)
-- Client-side routing with TanStack `basepath: /jadwa`
+- Client-side routing with TanStack `basepath: /jadwa-app`
 - SPA fallback via `404.html` + `.nojekyll` (so `_*.js` is published)
 
 ## Improvements vs a naive mirror
 
 - Indexable (`robots.txt`, `sitemap.xml`, OG/canonical → GitHub Pages)
-- PWA manifest scoped to `/jadwa/`
+- PWA manifest scoped to `/jadwa-app/`
 - Server-fn stub so `/_serverFn/` never networks
 - Light a11y/CSS polish + honest dismissible static-build notice
 - Grok builder `extensions.js` removed
